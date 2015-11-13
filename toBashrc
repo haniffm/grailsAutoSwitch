@@ -3,20 +3,24 @@
 # Grails auto version check
 function grailsVersionCheck(){
     # Saving the args for later
-    ARGS=("$@");
+    ARGS="$@";
 
     # Check if its below version 3
     if [ -f "./application.properties" ]; then
         VERSION=$(less application.properties | grep "app.grails.version" | cut -d= -f2);
     elif [ -f "./gradle.properties" ]; then
         VERSION=$(less gradle.properties | grep grailsVersion | cut -d= -f2);
-    fi
+    else
+        # When running grails command outside a grails app directory.
+		"grails" $ARGS;
+		return;
+	fi
 
     # Switch grails version to the one used by the current application
     sdk use grails $VERSION;
 
     # RUN grails without the alias and with the given arguments
-    "grails" $ARGS
+    "grails" $ARGS;
 }
 # Set alias to run the function above
 alias grails=grailsVersionCheck
